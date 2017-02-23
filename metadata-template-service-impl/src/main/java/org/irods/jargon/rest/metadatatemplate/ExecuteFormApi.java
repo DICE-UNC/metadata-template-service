@@ -20,7 +20,7 @@ import javax.ws.rs.*;
 @Path("/executeForm")
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-02-22T16:39:27.094-05:00")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-02-23T16:25:45.614-05:00")
 public class ExecuteFormApi  {
    private final ExecuteFormApiService delegate = ExecuteFormApiServiceFactory.getExecuteFormApi();
 
@@ -28,8 +28,8 @@ public class ExecuteFormApi  {
     
     @Consumes({ "application/json" })
     @Produces({ "application/json" })
-    public Response executeForm( Form body,@Context SecurityContext securityContext)
+    public Response executeForm( Form form, @QueryParam("path") String path,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.executeForm(body,securityContext);
+        return delegate.executeForm(form,path,securityContext);
     }
 }

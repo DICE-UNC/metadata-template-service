@@ -20,7 +20,7 @@ import javax.ws.rs.*;
 @Path("/executeField")
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-02-22T16:39:27.094-05:00")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-02-23T16:25:45.614-05:00")
 public class ExecuteFieldApi  {
    private final ExecuteFieldApiService delegate = ExecuteFieldApiServiceFactory.getExecuteFieldApi();
 
@@ -28,8 +28,8 @@ public class ExecuteFieldApi  {
     
     @Consumes({ "application/json" })
     @Produces({ "application/json" })
-    public Response executeField( Field body,@Context SecurityContext securityContext)
+    public Response executeField( Field field, @QueryParam("path") String path,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.executeField(body,securityContext);
+        return delegate.executeField(field,path,securityContext);
     }
 }

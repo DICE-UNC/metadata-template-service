@@ -2,6 +2,10 @@ package org.irods.jargon.rest.metadatatemplate.model;
 
 import java.util.Objects;
 import java.util.ArrayList;
+
+import org.irods.jargon.formbot.FormBotExecutionEnum;
+import org.irods.jargon.formbot.FormBotValidationEnum;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
@@ -11,17 +15,22 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-02-22T16:39:27.094-05:00")
 public class ExecutionResult   {
   
-  private String code = null;
+  private FormBotExecutionEnum code = null;
   private String message = null;
+  
+  public ExecutionResult(FormBotExecutionEnum code, String message) {
+	  this.code = code;
+	  this.message = message;
+  }
 
   /**
    **/
   
   @JsonProperty("code")
-  public String getCode() {
+  public FormBotExecutionEnum getCode() {
     return code;
   }
-  public void setCode(String code) {
+  public void setCode(FormBotExecutionEnum code) {
     this.code = code;
   }
 

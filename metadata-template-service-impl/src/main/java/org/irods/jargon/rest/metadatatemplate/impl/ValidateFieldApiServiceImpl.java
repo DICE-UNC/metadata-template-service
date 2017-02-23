@@ -173,4 +173,12 @@ public class ValidateFieldApiServiceImpl extends ValidateFieldApiService {
 				.entity(validationResult)
 				.build();
 	}
+	
+	public IRODSAccessObjectFactory getIrodsAccessObjectFactory() {
+		return irodsAccessObjectFactory;
+	}
+	
+	public void setIrodsObjectFactory(IRODSAccessObjectFactory irodsAccessObjectFactory) {
+		this.irodsAccessObjectFactory = irodsAccessObjectFactory;
+	}
 }
