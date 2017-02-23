@@ -2,12 +2,14 @@ package org.irods.jargon.rest.metadatatemplate.model;
 
 import java.util.Objects;
 import java.util.ArrayList;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.util.List;
 
-
-
+import org.irods.jargon.formbot.FormElementEnum;
+import org.irods.jargon.metadatatemplate.ElementTypeEnum;
 
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-02-22T16:39:27.094-05:00")
 public class Field   {
@@ -15,8 +17,8 @@ public class Field   {
   private String name = null;
   private String uniqueId = null;
   private String description = null;
-  private String type = null;
-  private String formElement = null;
+  private ElementTypeEnum type = null;
+  private FormElementEnum formElement = null;
   private List<String> currentValue = new ArrayList<String>();
   private List<String> defaultValue = new ArrayList<String>();
   private List<String> displayValue = new ArrayList<String>();
@@ -59,10 +61,10 @@ public class Field   {
    **/
   
   @JsonProperty("type")
-  public String getType() {
+  public ElementTypeEnum getType() {
     return type;
   }
-  public void setType(String type) {
+  public void setType(ElementTypeEnum type) {
     this.type = type;
   }
 
@@ -70,10 +72,10 @@ public class Field   {
    **/
   
   @JsonProperty("formElement")
-  public String getFormElement() {
+  public FormElementEnum getFormElement() {
     return formElement;
   }
-  public void setFormElement(String formElement) {
+  public void setFormElement(FormElementEnum formElement) {
     this.formElement = formElement;
   }
 
