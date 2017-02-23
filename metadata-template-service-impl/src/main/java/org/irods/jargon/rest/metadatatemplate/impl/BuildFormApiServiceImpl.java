@@ -31,7 +31,6 @@ import javax.ws.rs.core.SecurityContext;
 public class BuildFormApiServiceImpl extends BuildFormApiService {
 	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-
 	
 	private IRODSAccessObjectFactory irodsAccessObjectFactory;
 	
