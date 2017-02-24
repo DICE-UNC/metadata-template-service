@@ -21,8 +21,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.irods.jargon.rest.metadatatemplate.NotFoundException;
+import org.irods.jargon.rest.security.IrodsAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,11 +39,13 @@ import java.io.InputStream;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+@Component
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-02-22T16:39:27.094-05:00")
 public class ValidateFormApiServiceImpl extends ValidateFormApiService {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+	@Autowired
 	private IRODSAccessObjectFactory irodsAccessObjectFactory;
 
 	@Override
@@ -47,6 +53,11 @@ public class ValidateFormApiServiceImpl extends ValidateFormApiService {
 			throws NotFoundException {
 
 		List<ValidationResult> returnList = new ArrayList<ValidationResult>();
+
+		if (securityContext == null) {
+			// throw new IllegalArgumentException("null securityContext");
+			return Response.status(405).entity("null securityContext").build();
+		}
 
 		if (body.getUniqueId().isEmpty() || body.getFields().isEmpty()) {
 			log.error("Insufficient information to validate form: both uniqueId and fields list must be populated");
@@ -60,8 +71,14 @@ public class ValidateFormApiServiceImpl extends ValidateFormApiService {
 		JargonMetadataResolver resolver = null;
 		MetadataTemplate template = null;
 
+		log.info("authentication:{}", SecurityContextHolder.getContext()
+				.getAuthentication());
+		IrodsAuthentication irodsAuthentication = (IrodsAuthentication) SecurityContextHolder
+				.getContext().getAuthentication();
+
 		try {
-			resolver = new JargonMetadataResolver(irodsAccount,
+			resolver = new JargonMetadataResolver(
+					irodsAuthentication.getIrodsAccount(),
 					irodsAccessObjectFactory);
 		} catch (JargonException e) {
 			log.error(
@@ -119,7 +136,8 @@ public class ValidateFormApiServiceImpl extends ValidateFormApiService {
 					if (me.getName().equalsIgnoreCase(field.getName())) {
 						me.setCurrentValue(field.getCurrentValue());
 						ValidationReturnEnum validationReturn = ValidatorSingleton.VALIDATOR
-								.validate(irodsAccount,
+								.validate(
+										irodsAuthentication.getIrodsAccount(),
 										irodsAccessObjectFactory, me);
 						if ((validationReturn == ValidationReturnEnum.SUCCESS)
 								|| (validationReturn == ValidationReturnEnum.NOT_VALIDATED)
@@ -149,11 +167,8 @@ public class ValidateFormApiServiceImpl extends ValidateFormApiService {
 					FormBotValidationEnum.SUCCESS,
 					"All fields passed validation"));
 		}
-		
-		return Response
-				.status(200)
-				.entity(returnList)
-				.build();
+
+		return Response.status(200).entity(returnList).build();
 	}
 
 	public IRODSAccessObjectFactory getIrodsAccessObjectFactory() {

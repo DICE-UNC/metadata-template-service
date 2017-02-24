@@ -21,8 +21,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.irods.jargon.rest.metadatatemplate.NotFoundException;
+import org.irods.jargon.rest.security.IrodsAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,11 +39,13 @@ import java.io.InputStream;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+@Component
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-02-22T16:39:27.094-05:00")
 public class ValidateFieldApiServiceImpl extends ValidateFieldApiService {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+	@Autowired
 	private IRODSAccessObjectFactory irodsAccessObjectFactory;
 
 	@Override
@@ -48,42 +54,46 @@ public class ValidateFieldApiServiceImpl extends ValidateFieldApiService {
 
 		ValidationResult validationResult = null;
 
+		if (securityContext == null) {
+			// throw new IllegalArgumentException("null securityContext");
+			return Response.status(405).entity("null securityContext").build();
+		}
+
 		if (body.getName().isEmpty() || body.getUniqueId().isEmpty()) {
 			log.error("Insufficient information to validate field: both name and uniqueId must be populated");
 
 			validationResult = new ValidationResult(
 					FormBotValidationEnum.ERROR,
 					"Ill-formed request - both name and uniqueId must be populated");
-			return Response
-					.status(400)
-					.entity(validationResult)
-					.build();
+			return Response.status(400).entity(validationResult).build();
 		}
-
 
 		JargonMetadataResolver resolver = null;
 		MetadataTemplate template = null;
-		
+
+		log.info("authentication:{}", SecurityContextHolder.getContext()
+				.getAuthentication());
+		IrodsAuthentication irodsAuthentication = (IrodsAuthentication) SecurityContextHolder
+				.getContext().getAuthentication();
+
 		try {
-			resolver = new JargonMetadataResolver(irodsAccount,
+			resolver = new JargonMetadataResolver(
+					irodsAuthentication.getIrodsAccount(),
 					irodsAccessObjectFactory);
 		} catch (JargonException e) {
 			log.error(
 					"JargonException: JargonMetadataResolver could not be created",
 					e);
 		}
-		
+
 		if (resolver == null) {
 			log.error("Unable to instantiate JargonMetadataResolver");
-			
+
 			validationResult = new ValidationResult(
 					FormBotValidationEnum.ERROR,
 					"Could not create JargonMetadataResolver");
-			
-			return Response
-					.status(500)
-					.entity(validationResult)
-					.build();
+
+			return Response.status(500).entity(validationResult).build();
 		}
 
 		try {
@@ -94,44 +104,31 @@ public class ValidateFieldApiServiceImpl extends ValidateFieldApiService {
 			validationResult = new ValidationResult(
 					FormBotValidationEnum.ERROR,
 					"Error parsing metadata template");
-			
-			return Response
-					.status(500)
-					.entity(validationResult)
-					.build();
+
+			return Response.status(500).entity(validationResult).build();
 		} catch (FileNotFoundException e) {
 			log.error("FileNotFoundException: Metadata template not found");
-			
+
 			validationResult = new ValidationResult(
-					FormBotValidationEnum.ERROR,
-					"Metadata template not found");
-			
-			return Response
-					.status(404)
-					.entity(validationResult)
-					.build();
+					FormBotValidationEnum.ERROR, "Metadata template not found");
+
+			return Response.status(404).entity(validationResult).build();
 		} catch (MetadataTemplateProcessingException e) {
 			log.error("MetadataTemplateProcessingException: Error processing metadata template");
 
 			validationResult = new ValidationResult(
 					FormBotValidationEnum.ERROR,
 					"Error processing metadata template");
-			
-			return Response
-					.status(500)
-					.entity(validationResult)
-					.build();
+
+			return Response.status(500).entity(validationResult).build();
 		} catch (IOException e) {
 			log.error("IOException: Error reading metadata template from disk");
 
 			validationResult = new ValidationResult(
 					FormBotValidationEnum.ERROR,
 					"Error reading metadata template from disk");
-			
-			return Response
-					.status(500)
-					.entity(validationResult)
-					.build();
+
+			return Response.status(500).entity(validationResult).build();
 		}
 
 		if (template.getType() == TemplateTypeEnum.FORM_BASED) {
@@ -140,8 +137,8 @@ public class ValidateFieldApiServiceImpl extends ValidateFieldApiService {
 				if (me.getName().equalsIgnoreCase(body.getName())) {
 					me.setCurrentValue(body.getCurrentValue());
 					ValidationReturnEnum validationReturn = ValidatorSingleton.VALIDATOR
-							.validate(irodsAccount, irodsAccessObjectFactory,
-									me);
+							.validate(irodsAuthentication.getIrodsAccount(),
+									irodsAccessObjectFactory, me);
 
 					FormBotValidationEnum fbv;
 					if (validationReturn == ValidationReturnEnum.SUCCESS) {
@@ -156,29 +153,24 @@ public class ValidateFieldApiServiceImpl extends ValidateFieldApiService {
 					validationResult = new ValidationResult(fbv,
 							validationReturn.toString());
 
-					return Response
-							.status(200)
-							.entity(validationResult)
+					return Response.status(200).entity(validationResult)
 							.build();
 				}
 			}
 		} // TODO else if (other type of MetadataTemplate)
 
-		validationResult = new ValidationResult(
-				FormBotValidationEnum.ERROR,
+		validationResult = new ValidationResult(FormBotValidationEnum.ERROR,
 				"Field not found");
-		
-		return Response
-				.status(404)
-				.entity(validationResult)
-				.build();
+
+		return Response.status(404).entity(validationResult).build();
 	}
-	
+
 	public IRODSAccessObjectFactory getIrodsAccessObjectFactory() {
 		return irodsAccessObjectFactory;
 	}
-	
-	public void setIrodsObjectFactory(IRODSAccessObjectFactory irodsAccessObjectFactory) {
+
+	public void setIrodsObjectFactory(
+			IRODSAccessObjectFactory irodsAccessObjectFactory) {
 		this.irodsAccessObjectFactory = irodsAccessObjectFactory;
 	}
 }

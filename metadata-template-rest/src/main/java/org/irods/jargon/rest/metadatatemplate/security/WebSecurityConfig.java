@@ -107,8 +107,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.authenticationEntryPoint(irodsBasicAuthEntryPoint).and()
 				.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		http.addFilterBefore(connectionCloseFilter,
-				SecurityContextPersistenceFilter.class);
+		http.addFilterBefore(connectionCloseFilter, SecurityContextPersistenceFilter.class);
 	}
 
 	/**

@@ -19,7 +19,7 @@ import javax.ws.rs.*;
 @Path("/ping")
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-02-23T16:25:45.614-05:00")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-02-23T17:08:15.207-05:00")
 public class PingApi  {
    private final PingApiService delegate = PingApiServiceFactory.getPingApi();
 
@@ -27,8 +27,8 @@ public class PingApi  {
     
     
     @Produces({ "application/json", "application/xml" })
-    public Response server( @QueryParam("midTierOnly") Boolean midTierOnly,@Context SecurityContext securityContext)
+    public Response ping( @QueryParam("midTierOnly") Boolean midTierOnly,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.server(midTierOnly,securityContext);
+        return delegate.ping(midTierOnly,securityContext);
     }
 }

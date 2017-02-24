@@ -17,8 +17,12 @@ import org.irods.jargon.metadatatemplate.ValidationStyleEnum;
 import java.util.List;
 
 import org.irods.jargon.rest.metadatatemplate.NotFoundException;
+import org.irods.jargon.rest.security.IrodsAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,41 +31,54 @@ import java.io.InputStream;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+@Component
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-02-22T16:39:27.094-05:00")
 public class BuildFormApiServiceImpl extends BuildFormApiService {
-	
+
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	
+
+	@Autowired
 	private IRODSAccessObjectFactory irodsAccessObjectFactory;
-	
+
 	@Override
 	public Response buildForm(MetadataTemplateRequest body,
 			SecurityContext securityContext) throws NotFoundException {
-		
+
 		JargonMetadataResolver resolver = null;
 		MetadataTemplate template = null;
 		String uuidString = null;
 
+		if (securityContext == null) {
+			// throw new IllegalArgumentException("null securityContext");
+			return Response.status(405).entity("null securityContext").build();
+		}
+
+		log.info("authentication:{}", SecurityContextHolder.getContext()
+				.getAuthentication());
+		IrodsAuthentication irodsAuthentication = (IrodsAuthentication) SecurityContextHolder
+				.getContext().getAuthentication();
+
 		Form form = new Form();
-		
+
 		try {
-			resolver = new JargonMetadataResolver(irodsAccount,
+			resolver = new JargonMetadataResolver(
+					irodsAuthentication.getIrodsAccount(),
 					irodsAccessObjectFactory);
 		} catch (JargonException e) {
 			log.error(
 					"JargonException: JargonMetadataResolver could not be created",
 					e);
 		}
-		
+
 		if (resolver == null) {
 			log.error("Unable to instantiate JargonMetadataResolver");
-			
+
 			return Response
 					.status(500)
 					.entity("Internal server error - Unable to instantiate JargonMetadataResolver")
 					.build();
 		}
-		
+
 		try {
 			if (!body.getUuid().isEmpty()) {
 				// Prefer UUID if provided
@@ -69,8 +86,10 @@ public class BuildFormApiServiceImpl extends BuildFormApiService {
 			} else if (!body.getFqName().isEmpty()) {
 				// Prefer FQ name if no UUID provided
 				template = resolver.findTemplateByFqName(body.getFqName());
-			} else if (!body.getName().isEmpty() && !body.getActiveDir().isEmpty()) {
-				template = resolver.findTemplateByName(body.getName(), body.getActiveDir());
+			} else if (!body.getName().isEmpty()
+					&& !body.getActiveDir().isEmpty()) {
+				template = resolver.findTemplateByName(body.getName(),
+						body.getActiveDir());
 			} else {
 				return Response
 						.status(400)
@@ -80,13 +99,10 @@ public class BuildFormApiServiceImpl extends BuildFormApiService {
 		} catch (FileNotFoundException e) {
 			log.error("Metadata template file not found");
 
-			return Response
-					.status(404)
-					.entity("File not found")
-					.build();
+			return Response.status(404).entity("File not found").build();
 		} catch (MetadataTemplateParsingException e) {
 			log.error("Error parsing metadata template file JSON");
-	
+
 			return Response
 					.status(500)
 					.entity("Internal server error - Error parsing metadata template file JSON")
@@ -106,7 +122,7 @@ public class BuildFormApiServiceImpl extends BuildFormApiService {
 					.entity("Internal server error - IOException when trying to load metadata template file")
 					.build();
 		}
-		
+
 		form.setName(template.getName());
 		form.setDescription(template.getDescription());
 		form.setUniqueId(uuidString);
@@ -218,17 +234,15 @@ public class BuildFormApiServiceImpl extends BuildFormApiService {
 			}
 		} // TODO else if (other type of MetadataTemplate)
 
-		return Response
-				.status(200)
-				.entity(form)
-				.build();
+		return Response.status(200).entity(form).build();
 	}
-	
+
 	public IRODSAccessObjectFactory getIrodsAccessObjectFactory() {
 		return irodsAccessObjectFactory;
 	}
-	
-	public void setIrodsObjectFactory(IRODSAccessObjectFactory irodsAccessObjectFactory) {
+
+	public void setIrodsObjectFactory(
+			IRODSAccessObjectFactory irodsAccessObjectFactory) {
 		this.irodsAccessObjectFactory = irodsAccessObjectFactory;
 	}
 }
