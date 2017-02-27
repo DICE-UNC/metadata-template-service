@@ -1,10 +1,14 @@
 package org.irods.jargon.rest.metadatatemplate.impl;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.pub.IRODSAccessObjectFactory;
 import org.irods.jargon.formbot.FormElementEnum;
-import org.irods.jargon.rest.metadatatemplate.*;
-import org.irods.jargon.rest.metadatatemplate.model.*;
 import org.irods.jargon.metadatatemplate.FormBasedMetadataTemplate;
 import org.irods.jargon.metadatatemplate.JargonMetadataResolver;
 import org.irods.jargon.metadatatemplate.MetadataElement;
@@ -13,23 +17,17 @@ import org.irods.jargon.metadatatemplate.MetadataTemplateParsingException;
 import org.irods.jargon.metadatatemplate.MetadataTemplateProcessingException;
 import org.irods.jargon.metadatatemplate.TemplateTypeEnum;
 import org.irods.jargon.metadatatemplate.ValidationStyleEnum;
-
-import java.util.List;
-
+import org.irods.jargon.rest.metadatatemplate.BuildFormApiService;
 import org.irods.jargon.rest.metadatatemplate.NotFoundException;
+import org.irods.jargon.rest.metadatatemplate.model.Field;
+import org.irods.jargon.rest.metadatatemplate.model.Form;
+import org.irods.jargon.rest.metadatatemplate.model.MetadataTemplateRequest;
 import org.irods.jargon.rest.security.IrodsAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 
 @Component
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-02-22T16:39:27.094-05:00")
