@@ -11,4 +11,4 @@ CMD ["/runit.sh"]
 
 # build: docker build -t diceunc/metadata-template-rest:4.2.1.0 .
 
-# run:  docker run -d --rm -p 8080:8080 -v /etc/irods-ext:/etc/irods-ext  --add-host irods420.irodslocal:172.16.250.101 diceunc/irods-base-rest:4.2.1.0
+# run:  docker run -d --rm -p 8080:8080 -v /etc/irods-ext:/etc/irods-ext  --add-host irods420.irodslocal:172.16.250.101 diceunc/metadata-template-rest:4.2.1.0

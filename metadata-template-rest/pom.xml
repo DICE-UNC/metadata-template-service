@@ -129,10 +129,15 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-		</dependency>
+		</dependency> 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+		</dependency> 
+		<dependency>
+			<groupId>org.irods</groupId>
+			<artifactId>metadata-template-service-impl</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
